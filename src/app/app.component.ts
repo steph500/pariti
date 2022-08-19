@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ShopItemsInitialData } from './app.response.request';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-root',
