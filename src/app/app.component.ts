@@ -51,6 +51,7 @@ export class AppComponent {
   // function to add selected items to selectedItems array
   addSelectedItem(item: ShopItemsInitialData) {
     this.selectedItems.push(item);
+    
   }
 
   // function to allow user to buy an item
