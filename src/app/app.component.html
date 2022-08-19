@@ -1,18 +1,39 @@
-<div class="container">
-  <h1>Vending Machine</h1>
-  <h2>
-    Items
-  </h2>
-  <div class="row">
-    <div>
-      <div *ngFor="let item of items">
+<div class="container-fluid">
+
+  <div>
+    <h1>Vending Machine</h1>
+    <div><h3>simulaing inserting cash </h3>
+      <button class="btn btn-primary" (click)="insertMoney()">Insert Cash</button><br/>
+      <div *ngIf="totalAmountInserted"> Bal {{balance}} {{currency}}</div>
+    </div>
+
+    <div class="row">
+      <div *ngFor="let item of items" class="item-rows">
         <div>
-          <h3>{{item.name}}</h3>
+          <div>
+            <h3>{{item.name}}</h3>
+          </div>
+          <div>
+            <p>{{item.price}} {{currency}}</p>
+          </div>
+          <button class="btn btn-primary" (click)="addSelectedItem(item)">Select Item</button>
         </div>
-        <div>
-          <p>{{item.price}} {{currency}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selectedItems">
+    <h2>
+      Selected Items
+    </h2>
+    <div class="row">
+      <div>
+        <div *ngFor="let item of selectedItems">
+          <div>
+            {{item.name}}
+          </div>
         </div>
-        <button class="btn btn-primary" (click)="addSelectedItem(item)">Select Item</button>
+        <button class="btn btn-primary" (click)="buyItems()">Buy</button>
       </div>
     </div>
   </div>

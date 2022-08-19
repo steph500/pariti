@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BsModalService } from 'ngx-bootstrap/modal';
 
 @NgModule({
   declarations: [
@@ -13,9 +12,9 @@ import { BsModalService } from 'ngx-bootstrap/modal';
   imports: [
     BrowserModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
   ],
-  providers: [BsModalService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

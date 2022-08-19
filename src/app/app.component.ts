@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ShopItemsInitialData } from './app.response.request';
-import { BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +11,6 @@ export class AppComponent {
   title = 'pariti';
 
   constructor(
-    private modalService: BsModalService,
   ) { 
     // standing data for the shop items
     this.items.push(new ShopItemsInitialData('Item 1', 10, 10));
@@ -52,14 +50,43 @@ export class AppComponent {
     this.change[10] * 10 + this.change[20] * 20 + this.change[50] * 50 + this.change[100] * 100;
 
 
+  balance = 0;
+
   // function to add selected items to selectedItems array
   addSelectedItem(item: ShopItemsInitialData) {
-    this.selectedItems.push(item);
-    this.modalService.show(item.quantity + "selected");
+
+    // check that the amount of money inserted is enough to buy the item
+    this.totalAmount = item.price + this.totalAmount;
+
+    // update qantity of item in the vending machine
+    if(item.quantity) {
+      if (this.totalAmountInserted >= this.totalAmount) {
+        this.selectedItems.push(item);
+        item.quantity--;
+        this.balance = this.totalAmountInserted - item.price;
+      } else {
+        alert('Not enough money to purchase more items');
+      }
+    } else {
+      alert('No more items available');
+    }
+  }
+
+  // function to insert random amount of money into the vending machine
+  insertMoney() {
+    this.amount[1] = Math.floor(Math.random() * 10);
+    this.amount[2] = Math.floor(Math.random() * 10);
+    this.amount[5] = Math.floor(Math.random() * 10);
+    this.amount[10] = Math.floor(Math.random() * 10);
+    this.amount[20] = Math.floor(Math.random() * 10);
+    this.amount[50] = Math.floor(Math.random() * 10);
+    this.amount[100] = Math.floor(Math.random() * 10);
+    this.totalAmountInserted = this.amount[1] * 1 + this.amount[2] * 2 + this.amount[5] * 5 +
+      this.amount[10] * 10 + this.amount[20] * 20 + this.amount[50] * 50 + this.amount[100] * 100;
   }
 
   // function to allow user to buy an item
   buyItems() {
-    // 
+    // check if the amount inserted is enough to buy the item
   }
 }
