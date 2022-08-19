@@ -9,47 +9,24 @@ import { ShopItemsInitialData } from './app.response.request';
 export class AppComponent {
   title = 'pariti';
 
-  // items: ShopItemsInitialData[];;
+  constructor() { 
+    // standing data for the shop items
+    this.items.push(new ShopItemsInitialData('Item 1', 10, 10));
+    this.items.push(new ShopItemsInitialData('Item 2', 20, 10));
+    this.items.push(new ShopItemsInitialData('Item 3', 30, 10));
+    this.items.push(new ShopItemsInitialData('Item 4', 40, 10));
+    this.items.push(new ShopItemsInitialData('Item 5', 50, 10));
+    this.items.push(new ShopItemsInitialData('Item 6', 60, 10));
+    this.items.push(new ShopItemsInitialData('Item 7', 70, 10));
+    this.items.push(new ShopItemsInitialData('Item 8', 80, 10));
+  }
 
-  // standing data  for items in a vending maching
-  items = [
-    {
-      name: 'Coke',
-      price: '$1.00',
-      quantity: '5'
-    },
-    {
-      name: 'Pepsi',
-      price: '$1.00',
-      quantity: '5'
-    },
-    {
-      name: 'Sprite',
-      price: '$1.00',
-      quantity: '5'
-    },
-    {
-      name: 'Fanta',
-      price: '$1.00',
-      quantity: '5'
-    },
-    {
-      name: 'Dr. Pepper',
-      price: '$1.00',
-      quantity: '5'
-    },
-    {
-      name: '7up',
-      price: '$1.00',
-      quantity: '5'
-    },
-    {
-      name: 'Mountain Dew',
-      price: '$1.00',
-      quantity: '5'
-    }];
+  items: ShopItemsInitialData[] = [];
+
+  // standing data for items in a vending maching
 
   selectedItems: ShopItemsInitialData[] = [];
+  currency: string = 'USD';
 
   // dollar denominations for the vending machine
   dollarDenominations = [1, 2, 5, 10, 20, 50, 100];
@@ -77,7 +54,7 @@ export class AppComponent {
   }
 
   // function to allow user to buy an item
-  buyItem() {
-    
+  buyItems() {
+    // 
   }
 }
