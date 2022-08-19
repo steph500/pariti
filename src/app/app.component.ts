@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ShopItemsInitialData } from './app.response.request';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-root',
@@ -7,9 +8,12 @@ import { ShopItemsInitialData } from './app.response.request';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
   title = 'pariti';
 
-  constructor() { 
+  constructor(
+    private modalService: BsModalService,
+  ) { 
     // standing data for the shop items
     this.items.push(new ShopItemsInitialData('Item 1', 10, 10));
     this.items.push(new ShopItemsInitialData('Item 2', 20, 10));
@@ -51,7 +55,7 @@ export class AppComponent {
   // function to add selected items to selectedItems array
   addSelectedItem(item: ShopItemsInitialData) {
     this.selectedItems.push(item);
-    
+    this.modalService.show(item.quantity + "selected");
   }
 
   // function to allow user to buy an item
