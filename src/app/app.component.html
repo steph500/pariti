@@ -4,7 +4,7 @@
     <h1>Vending Machine</h1>
     <div><h3>simulating inserting cash </h3>
       <button class="btn btn-primary" (click)="insertMoney()">Insert Cash</button><br/>
-      <div *ngIf="totalAmountInserted"> Bal {{totalAmountInserted - totalAmount}} {{currency}}</div>
+      <div *ngIf="totalAmountInMachine"> Bal {{totalAmountInMachine - totalAmount}} {{currency}}</div>
     </div>
 
     <div class="row">
