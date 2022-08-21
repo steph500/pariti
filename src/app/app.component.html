@@ -2,13 +2,14 @@
 
   <div>
     <h1>Vending Machine</h1>
+    <h2>Users</h2>
     <div><h3>simulating inserting cash </h3>
       <button class="btn btn-primary" (click)="insertMoney()">Insert Cash</button><br/>
-      <div *ngIf="totalAmountInMachine"> Bal {{totalAmountInMachine - totalAmount}} {{currency}}</div>
+      <div *ngIf="totalAmountInMachine"> Bal {{totalAmountInMachine - totalAmountForSelectedItems}} {{currency}}</div>
     </div>
 
     <div class="row">
-      <div *ngFor="let item of items" class="item-rows">
+      <div *ngFor="let item of shopItems" class="item-rows">
         <div>
           <div>
             <h3>{{item.name}}</h3>
@@ -38,4 +39,10 @@
     </div>
   </div>
 
+  <div *ngIf="totalChange">
+    <h2>
+      Change
+    </h2>
+    {{change | json}}
+  </div>
 </div>
