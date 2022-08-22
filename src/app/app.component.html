@@ -2,12 +2,17 @@
 
   <div>
     <h1>Vending Machine</h1>
-    <h2>Users</h2>
-    <div><h3>simulating inserting cash </h3>
-      <button class="btn btn-primary" (click)="insertMoney()">Insert Cash</button><br/>
-      <div *ngIf="totalAmountInMachine"> Bal {{totalAmountInMachine - totalAmountForSelectedItems}} {{currency}}</div>
+    <div class="row">
+      <div class="item-rows-2">
+        Amount in Vending Machine
+        <div> {{totalAmountInMachine}} {{currency}}</div>
+      </div>
+      <div class="item-rows-2">
+        Balance
+        <button (click)="generateRandomValues()">Insert Cash</button>
+        <div *ngIf="totalAmountInMachine"> {{totalAmountInserted - totalAmountForSelectedItems}} {{currency}}</div>
+      </div>
     </div>
-
     <div class="row">
       <div *ngFor="let item of shopItems" class="item-rows">
         <div>

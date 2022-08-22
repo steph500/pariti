@@ -3,9 +3,15 @@
     flex-wrap: wrap;
     width: 100%;
     align-items: center;
+    margin-top: 30px;
 }
 
 .item-rows {
   width: 20%;
+  height: 100%;
+}
+
+.item-rows-2 {
+  width: 50%;
   height: 100%;
 }

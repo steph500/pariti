@@ -12,79 +12,70 @@ export class AppComponent {
   title = 'pariti';
   number: number = 0;
   isThereChangeAvailable: boolean = false;
-
-  constructor(private http: HttpClient
-  ) {
-    // standing data for the shop items
-    this.shopItems.push(new ShopItemsInitialData('Item 1', 10, 10));
-    this.shopItems.push(new ShopItemsInitialData('Item 2', 20, 10));
-    this.shopItems.push(new ShopItemsInitialData('Item 3', 30, 10));
-    this.shopItems.push(new ShopItemsInitialData('Item 4', 40, 10));
-    this.shopItems.push(new ShopItemsInitialData('Item 5', 50, 10));
-    this.shopItems.push(new ShopItemsInitialData('Item 6', 60, 10));
-    this.shopItems.push(new ShopItemsInitialData('Item 7', 70, 10));
-    this.shopItems.push(new ShopItemsInitialData('Item 8', 80, 10));
-  }
-
   shopItems: ShopItemsInitialData[] = [];
-
-  // standing data for items in a vending maching
-
   selectedItems: ShopItemsInitialData[] = [];
   currency: string = 'USD';
-
-  // dollar denominations for the vending machine
   dollarDenominations = [1, 2, 5, 10, 20, 50, 100];
-
-  // amountInMachine of money in the vending machine for each denomination with type defination
-  amountInMachine: { [key: number]: number } = { 1: 0, 2: 0, 5: 0, 10: 0, 20: 0, 50: 0, 100: 0 };
-
-  // amountInMachine: { [key: number]: number } = {};
-  // total amountInMachine of money available in the vending machine
-  totalAmountForSelectedItems = this.amountInMachine[1] * 1 + this.amountInMachine[2] * 2 + this.amountInMachine[5] * 5 +
-    this.amountInMachine[10] * 10 + this.amountInMachine[20] * 20 + this.amountInMachine[50] * 50 + this.amountInMachine[100] * 100;
-
-  amountInserted: { [key: number]: number } = { 1: 0, 2: 0, 5: 0, 10: 0, 20: 0, 50: 0, 100: 0 };
-  // totalAmountInMachine = this.amountInserted[1] * 1 + this.amountInserted[2] * 2 +
-  //   this.amountInserted[5] * 5 + this.amountInserted[10] * 10 + this.amountInserted[20] * 20
-  //   + this.amountInserted[50] * 50 + this.amountInserted[100] * 100;
+  amountInMachine: { [key: number]: number } = {};
   totalAmountInMachine = 0;
 
-  change: { [key: number]: number } = { 1: 0, 2: 0, 5: 0, 10: 0, 20: 0, 50: 0, 100: 0 };
-  // totalChange = this.change[1] * 1 + this.change[2] * 2 + this.change[5] * 5 +
-  //   this.change[10] * 10 + this.change[20] * 20 + this.change[50] * 50 + this.change[100] * 100;
+  totalAmountForSelectedItems = 0;
+
+  change: { [key: number]: number } = {};
   totalChange = 0;
+
+  totalAmountInserted = 0;
+  amountInserted: { [key: number]: number } = {};
+
+  constructor(private http: HttpClient
+  ) { }
+
+  ngOnInit() {
+    this.http.get<ShopItemsInitialData[]>('api/shopItems').subscribe((data: ShopItemsInitialData[]) => {
+      this.shopItems = data;
+      console.log(this.shopItems);
+    });
+
+    this.http.get<{ [key: number]: number }>('api/amountInMachine').subscribe((data: { [key: number]: number }) => {
+      this.amountInMachine = data;
+      this.totalAmountInMachine = this.amountInMachine[1] * 1 + this.amountInMachine[2] * 2 + this.amountInMachine[5] * 5 +
+        this.amountInMachine[10] * 10 + this.amountInMachine[20] * 20 + this.amountInMachine[50] * 50 + this.amountInMachine[100] * 100;
+      console.log(this.amountInMachine);
+    });
+  }
+
+  // function to generate random values for amountInserted
+  generateRandomValues() {
+    for (let i = 0; i < this.dollarDenominations.length; i++) {
+      this.amountInserted[this.dollarDenominations[i]] = Math.floor(Math.random() * 10) + 1;
+      this.totalAmountInserted += this.amountInserted[this.dollarDenominations[i]] * this.dollarDenominations[i];
+    }
+
+    if (this.totalAmountInserted > this.totalAmountInMachine) {
+      alert('Not enough money in machine or change, Generate new values');
+      this.totalAmountInserted = 0;
+      this.amountInserted = {};
+    }
+    console.log(this.amountInserted);
+  }
 
   // function to add selected items to selectedItems array
   addSelectedItem(item: ShopItemsInitialData) {
 
-    if (this.totalAmountInMachine > this.totalAmountForSelectedItems) {
-      if (item.quantity > 0) {
-        this.totalAmountForSelectedItems = item.price + this.totalAmountForSelectedItems;
-        this.selectedItems.push(item);
-        item.quantity--;
-      } else {
-        alert('No more ' + item.name + ' available');
-      }
-    } else {
+    this.totalAmountForSelectedItems = item.price + this.totalAmountForSelectedItems;
+
+    if (this.totalAmountInserted > this.totalAmountForSelectedItems && item.quantity > 0) {
+      this.selectedItems.push(item);
+      item.quantity--;
+    }
+    else if (item.quantity <= 0) {
+      this.totalAmountForSelectedItems = this.totalAmountForSelectedItems - item.price;
+      alert('No more ' + item.name + ' available');
+    }
+    else {
+      this.totalAmountForSelectedItems = this.totalAmountForSelectedItems - item.price;
       alert('Not enough money to purchase items');
     }
-  }
-
-  // function to insert random amountInMachine of money into the vending machine
-  insertMoney() {
-    this.selectedItems = [];
-    this.totalAmountForSelectedItems = 0;
-
-    this.amountInMachine[1] = Math.floor(Math.random() * 10);
-    this.amountInMachine[2] = Math.floor(Math.random() * 10);
-    this.amountInMachine[5] = Math.floor(Math.random() * 10);
-    this.amountInMachine[10] = Math.floor(Math.random() * 10);
-    this.amountInMachine[20] = Math.floor(Math.random() * 10);
-    this.amountInMachine[50] = Math.floor(Math.random() * 10);
-    this.amountInMachine[100] = Math.floor(Math.random() * 10);
-    this.totalAmountInMachine = this.amountInMachine[1] * 1 + this.amountInMachine[2] * 2 + this.amountInMachine[5] * 5 +
-      this.amountInMachine[10] * 10 + this.amountInMachine[20] * 20 + this.amountInMachine[50] * 50 + this.amountInMachine[100] * 100;
   }
 
   checkChange() {
@@ -131,30 +122,52 @@ export class AppComponent {
   buyItems() {
 
     this.isThereChangeAvailable = this.checkChange();
-
     if (this.isThereChangeAvailable) {
-      // REST endpoint to buy items
-      this.http.post('http://localhost:4200/buyItems', this.selectedItems).subscribe(data => {
-        
-      });
+
+      for (let x = 0; x < this.selectedItems.length; x++) {
+        let url = 'api/shopItems/' + this.selectedItems[x].id;
+        this.http.post(url, this.shopItems[this.selectedItems[x].id - 1]).subscribe(data => {
+        });
+      }
     } else {
       alert("ERROR: - Money in machine not enough for change, Please contact admin for assistance")
     }
+
   }
 
-  // function to allow for update of items in the vending machine
-  addNewItem() {
-    this.http.get<ShopItemsInitialData>('http://localhost:4200/updateItems').subscribe((data: ShopItemsInitialData) => {
-      this.shopItems.push(data);
-      alert('Items updated');
+  // fuction to update price of an item
+  updatePrice(item: ShopItemsInitialData, newPrice: number) {
+    item.price = newPrice;
+    let url = 'api/shopItems/' + item.id + 1;
+    this.http.post(url, item).subscribe(data => {
+      alert('Price updated');
     });
   }
 
-  // function to update amountInMachine of money in the vending machine
-  // updateAmountInMachine() {
-  //   this.http.post('http://localhost:8080/updateAmountInMachine', ).subscribe((data) => {
-  //     this.shopItems.push(data);
-  //     alert('Amount in machine updated');
-  //   });
-  // }
+  // function to update quantity of an item
+  updateQuantity(item: ShopItemsInitialData, newQuantity: number) {
+    item.quantity = newQuantity;
+    let url = 'api/shopItems/' + item.id + 1;
+    this.http.post(url, item).subscribe(data => {
+      alert('Quantity updated');
+    });
+  }
+
+  // function to update cash for amountInMachine
+  updateCash(denomination: number, newQuantity: number) {
+    this.amountInMachine[denomination] = newQuantity + this.amountInMachine[denomination];
+    let url = 'api/amountInMachine/' + denomination;
+    this.http.post(url, this.amountInMachine[denomination]).subscribe(data => {
+      alert('Cash updated');
+    });
+  }
+
+  // function to add new item to shopItems array
+  addItem(item: ShopItemsInitialData) {
+    this.shopItems.push(item);
+    let url = 'api/shopItems';
+    this.http.post(url, item).subscribe(data => {
+      alert('Item added');
+    });
+  }
 }
