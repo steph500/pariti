@@ -2,6 +2,7 @@
 
   <div>
     <h1>Vending Machine</h1>
+    <h2>User</h2>
     <div class="row">
       <div class="item-rows-2">
         Amount in Vending Machine
@@ -17,7 +18,8 @@
       <div *ngFor="let item of shopItems" class="item-rows">
         <div>
           <div>
-            <h3>{{item.name}}</h3>
+            <h3>{{item.name}}</h3> 
+            {{item.quantity}} Remaining
           </div>
           <div>
             <p>{{item.price}} {{currency}}</p>
@@ -44,10 +46,46 @@
     </div>
   </div>
 
-  <div *ngIf="totalChange">
+  <div *ngIf="!totalChange">
     <h2>
       Change
-    </h2>
-    {{change | json}}
+    </h2><div>
+      {{change | json}}
+    </div>
   </div>
+
+  <div class="row">
+    <h2>Maintainance</h2>
+    <div>
+      <h3>Set Price of Existing Item</h3>
+      <div>
+        <label>Item</label>
+        <select [(ngModel)]="selectedItemForPrice">
+          <option *ngFor="let item of shopItems" [value]="item.name">{{item.name}}</option>
+        </select>
+        <input type="number" [(ngModel)]="newPrice" placeholder="New Price">
+      </div>
+      <button class="btn btn-primary" (click)="updatePrice()">Set Price</button>
+    </div>
+    <div>
+      <h3>Adjust the number of items available for a product slot</h3>
+      <div>
+        <label>Item</label>
+        <select [(ngModel)]="selectedItemForPrice">
+          <option *ngFor="let item of shopItems" [value]="item.name">{{item.name}}</option>
+        </select>
+        <input type="number" [(ngModel)]="newQuantity" placeholder="New Quantity">
+    </div>
+    <button class="btn btn-primary" (click)="updateQuantity()">Set Quantity</button>
+  </div>
+  <div>
+    <h3>Update amount of money in vending machine</h3>
+    <div *ngFor="let denomination of dollarDenominations">
+      <div>
+        <label>{{denomination}}</label>
+        <input type="number" [(ngModel)]="updateAmountInMachine[denomination]" placeholder="Amount">
+      </div>
+    </div>
+    <button class="btn btn-primary" (click)="updateCash()">Update Amount</button>
+</div>
 </div>

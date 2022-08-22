@@ -1,0 +1,17 @@
+VENDING MACHINE
+
+HOW TO RUN THE APP
+1. copy the files on your local machine by cloning or any other means
+2. Make sure you have npm and angular installed. You can install by using (npm install -g @angular/cli). Use angular version 13 and above
+3. Install packages and libraries using npm install. 
+4. After everything is installed and no errors, use npm start to start serving the app locally on your machine. The app will open up on your 
+    default browser.
+
+USER
+The user side on the app is able to purchase items in the vending machine. A simulated insertion of cash is provided by use of a button where 
+random values are generated for money inserted into the machine. This cash is split into dollar denominations
+The user selects items they want to purchase from the list of available items in the vending machine. They are able to select multiple items and 
+just by a click of a button they get their change, the change is shown on the UI.
+
+MAINTAINANCE
+The maintanance person is able to update the cash in the machine and the price of the items in the vending machine.

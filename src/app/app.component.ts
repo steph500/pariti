@@ -18,6 +18,9 @@ export class AppComponent {
   dollarDenominations = [1, 2, 5, 10, 20, 50, 100];
   amountInMachine: { [key: number]: number } = {};
   totalAmountInMachine = 0;
+  selectedItemForPrice: string | undefined;
+  newPrice: number = 0;
+  newQuantity: number = 0;
 
   totalAmountForSelectedItems = 0;
 
@@ -26,21 +29,28 @@ export class AppComponent {
 
   totalAmountInserted = 0;
   amountInserted: { [key: number]: number } = {};
+  updateAmountInMachine: { [key: number]: number } = { 1: 0, 2: 0, 5: 0, 10: 0, 20: 0, 50: 0, 100: 0 };
 
   constructor(private http: HttpClient
   ) { }
 
   ngOnInit() {
+    this.selectedItems = [];
+    this.totalAmountForSelectedItems = 0;
+    this.totalChange = 0;
+    this.totalAmountInserted = 0;
+    this.amountInserted = {};
+    this.change = {};
+
+
     this.http.get<ShopItemsInitialData[]>('api/shopItems').subscribe((data: ShopItemsInitialData[]) => {
       this.shopItems = data;
-      console.log(this.shopItems);
     });
 
     this.http.get<{ [key: number]: number }>('api/amountInMachine').subscribe((data: { [key: number]: number }) => {
       this.amountInMachine = data;
       this.totalAmountInMachine = this.amountInMachine[1] * 1 + this.amountInMachine[2] * 2 + this.amountInMachine[5] * 5 +
         this.amountInMachine[10] * 10 + this.amountInMachine[20] * 20 + this.amountInMachine[50] * 50 + this.amountInMachine[100] * 100;
-      console.log(this.amountInMachine);
     });
   }
 
@@ -52,11 +62,11 @@ export class AppComponent {
     }
 
     if (this.totalAmountInserted > this.totalAmountInMachine) {
-      alert('Not enough money in machine or change, Generate new values');
+      alert('Not enough money in machine for change, Generate new values');
       this.totalAmountInserted = 0;
       this.amountInserted = {};
+      this.ngOnInit();
     }
-    console.log(this.amountInserted);
   }
 
   // function to add selected items to selectedItems array
@@ -79,42 +89,37 @@ export class AppComponent {
   }
 
   checkChange() {
-    this.totalChange = this.totalAmountInMachine - this.totalAmountForSelectedItems;
-    console.log(this.amountInMachine);
-    console.log(this.totalChange);
-    console.log(this.totalAmountInMachine);
-    console.log(this.totalAmountForSelectedItems);
+    this.totalChange = this.totalAmountInserted - this.totalAmountForSelectedItems;
 
     for (let i = this.dollarDenominations.length; i > 0; i--) {
-      if (this.totalChange >= this.amountInMachine[this.dollarDenominations[i - 1]]) {
 
-        var denomination = Math.floor(this.totalChange / this.dollarDenominations[i - 1]);
+      var denomination = Math.floor(this.totalChange / this.dollarDenominations[i - 1]);
 
-        if (denomination <= this.amountInMachine[this.dollarDenominations[i - 1]]) {
-          this.change[this.dollarDenominations[i - 1]] = denomination;
+      if (denomination <= this.amountInMachine[this.dollarDenominations[i - 1]]) {
+        this.change[this.dollarDenominations[i - 1]] = denomination;
 
-          this.totalChange = this.totalChange - denomination * this.dollarDenominations[i - 1];
-          this.amountInMachine[this.dollarDenominations[i - 1]] =
-            this.amountInMachine[this.dollarDenominations[i - 1]] - denomination;
+        this.totalChange = this.totalChange - denomination * this.dollarDenominations[i - 1];
+        this.amountInMachine[this.dollarDenominations[i - 1]] =
+          this.amountInMachine[this.dollarDenominations[i - 1]] - denomination;
 
-        } else {
+      } else {
 
-          this.change[this.dollarDenominations[i - 1]] = this.amountInMachine[this.dollarDenominations[i - 1]];
+        this.change[this.dollarDenominations[i - 1]] = this.amountInMachine[this.dollarDenominations[i - 1]];
 
-          this.totalChange = this.totalChange - this.amountInMachine[this.dollarDenominations[i - 1]] * this.dollarDenominations[i - 1];
+        this.totalChange = this.totalChange - this.amountInMachine[this.dollarDenominations[i - 1]] * this.dollarDenominations[i - 1];
 
-          this.amountInMachine[this.dollarDenominations[i - 1]] = 0;
-        }
-
+        this.amountInMachine[this.dollarDenominations[i - 1]] = 0;
       }
+
     }
 
     if (this.totalChange) {
       return false;
     }
-    console.log(this.totalChange)
-    console.log(this.amountInMachine);
-    console.log(this.change);
+
+    this.totalAmountInMachine = this.amountInMachine[1] * 1 + this.amountInMachine[2] * 2 + this.amountInMachine[5] * 5 +
+      this.amountInMachine[10] * 10 + this.amountInMachine[20] * 20 + this.amountInMachine[50] * 50 + this.amountInMachine[100] * 100;
+
     return true;
   }
 
@@ -122,52 +127,77 @@ export class AppComponent {
   buyItems() {
 
     this.isThereChangeAvailable = this.checkChange();
-    if (this.isThereChangeAvailable) {
 
+    if (this.isThereChangeAvailable && this.selectedItems.length > 0) {
       for (let x = 0; x < this.selectedItems.length; x++) {
         let url = 'api/shopItems/' + this.selectedItems[x].id;
         this.http.post(url, this.shopItems[this.selectedItems[x].id - 1]).subscribe(data => {
+          if (this.selectedItems.length == x + 1) {
+            this.ngOnInit();
+            alert('Items bought');
+          }
         });
       }
-    } else {
+
+    } else if (this.selectedItems.length <= 0) {
+      alert('No items selected');
+      this.ngOnInit();
+    }
+    else {
       alert("ERROR: - Money in machine not enough for change, Please contact admin for assistance")
+      this.ngOnInit();
     }
 
   }
 
   // fuction to update price of an item
-  updatePrice(item: ShopItemsInitialData, newPrice: number) {
-    item.price = newPrice;
-    let url = 'api/shopItems/' + item.id + 1;
-    this.http.post(url, item).subscribe(data => {
-      alert('Price updated');
-    });
+  updatePrice() {
+    // find selected item in shopItems array
+    for (let i = 0; i < this.shopItems.length; i++) {
+      if (this.shopItems[i].name == this.selectedItemForPrice) {
+        this.shopItems[i].price = this.newPrice;
+
+        let url = 'api/shopItems/' + this.shopItems[i].id;
+        this.http.post(url, this.shopItems[i]).subscribe(data => {
+          alert('Price updated');
+          this.ngOnInit();
+        });
+      }
+    }
   }
 
   // function to update quantity of an item
-  updateQuantity(item: ShopItemsInitialData, newQuantity: number) {
-    item.quantity = newQuantity;
-    let url = 'api/shopItems/' + item.id + 1;
-    this.http.post(url, item).subscribe(data => {
-      alert('Quantity updated');
-    });
+  updateQuantity() {
+    for (let i = 0; i < this.shopItems.length; i++) {
+      if (this.shopItems[i].name == this.selectedItemForPrice) {
+        this.shopItems[i].quantity = this.shopItems[i].quantity + this.newQuantity;
+
+        let url = 'api/shopItems/' + this.shopItems[i].id;
+        this.http.post(url, this.shopItems[i]).subscribe(data => {
+          alert('Quantity updated');
+          this.ngOnInit();
+        });
+      }
+    }
   }
 
   // function to update cash for amountInMachine
-  updateCash(denomination: number, newQuantity: number) {
-    this.amountInMachine[denomination] = newQuantity + this.amountInMachine[denomination];
-    let url = 'api/amountInMachine/' + denomination;
-    this.http.post(url, this.amountInMachine[denomination]).subscribe(data => {
-      alert('Cash updated');
-    });
-  }
+  updateCash() {
+    // update updateAmountInserted to amountInserted array
+    for (let i = 0; i < this.dollarDenominations.length; i++) {
+      this.amountInMachine[this.dollarDenominations[i]] = this.updateAmountInMachine[this.dollarDenominations[i]] +
+       this.amountInMachine[this.dollarDenominations[i]];
+       
+      console.log(this.amountInMachine[this.dollarDenominations[i]]);
 
-  // function to add new item to shopItems array
-  addItem(item: ShopItemsInitialData) {
-    this.shopItems.push(item);
-    let url = 'api/shopItems';
-    this.http.post(url, item).subscribe(data => {
-      alert('Item added');
-    });
+       let url = 'api/amountInMachine/' + this.dollarDenominations[i];
+
+       this.http.post(url, this.amountInMachine[i]).subscribe(data => {
+
+        alert('Quantity updated');
+        this.ngOnInit();
+      });
+
+    }
   }
 }
