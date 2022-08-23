@@ -12,7 +12,7 @@ export class ShopItemsInitialData {
 export class Amounts {
 
     public constructor(
-        public denomination: number,
+        public id: number,
         public amount: number,
     ) 
      { }

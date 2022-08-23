@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ShopItemsInitialData } from './app.response.request';
+import { Amounts, ShopItemsInitialData } from './app.response.request';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -42,15 +42,23 @@ export class AppComponent {
     this.amountInserted = {};
     this.change = {};
 
+    this.getShopInitialData();
+    this.getAmounts();
+  }
 
+  getShopInitialData() {
+    
     this.http.get<ShopItemsInitialData[]>('api/shopItems').subscribe((data: ShopItemsInitialData[]) => {
       this.shopItems = data;
       console.log(this.shopItems);
     });
+  }
 
-    this.http.get<{ [key: number]: number }>('api/amountInMachine').subscribe((data: { [key: number]: number }) => {
-      console.log(data)
-      this.amountInMachine = data;
+  getAmounts() {
+    this.http.get<Amounts[]>('api/amountInMachine').subscribe((data: Amounts[]) => {
+      for (let x = 0; x < data.length; x++) {
+        this.amountInMachine[data[x].id] = data[x].amount;
+      }
       this.totalAmountInMachine = this.amountInMachine[1] * 1 + this.amountInMachine[2] * 2 + this.amountInMachine[5] * 5 +
         this.amountInMachine[10] * 10 + this.amountInMachine[20] * 20 + this.amountInMachine[50] * 50 + this.amountInMachine[100] * 100;
     });
@@ -135,7 +143,8 @@ export class AppComponent {
         let url = 'api/shopItems/' + this.selectedItems[x].id;
         this.http.post(url, this.shopItems[this.selectedItems[x].id - 1]).subscribe(data => {
           if (this.selectedItems.length == x + 1) {
-            this.ngOnInit();
+
+            this.updateCash();
             alert('Items bought');
           }
         });
@@ -186,31 +195,27 @@ export class AppComponent {
   // function to update cash for amountInMachine
   updateCash() {
     // update updateAmountInserted to amountInserted array
-    // for (let i = 0; i < this.dollarDenominations.length; i++) {
-    //   this.amountInMachine[this.dollarDenominations[i]] = this.updateAmountInMachine[this.dollarDenominations[i]] +
-    //     this.amountInMachine[this.dollarDenominations[i]];
+    for (let i = 0; i < this.dollarDenominations.length; i++) {
 
-    //   console.log(this.amountInMachine[this.dollarDenominations[i]]);
+      this.amountInMachine[this.dollarDenominations[i]] = this.updateAmountInMachine[this.dollarDenominations[i]] +
+        this.amountInMachine[this.dollarDenominations[i]];
 
-    //   let url = 'api/amountInMachine/' + this.dollarDenominations[i];
+        let temp: Amounts = {
+          id: this.dollarDenominations[i],
+          amount: this.amountInMachine[this.dollarDenominations[i]]
+        };
 
-    //    this.http.post<{ [key: number]: number }>(url, this.amountInMachine[i]).subscribe(data => {
+      let url = 'api/amountInMachine/' + this.dollarDenominations[i];
 
-    //     alert('Quantity updated');
-    //     this.ngOnInit();
-    //   });
+       this.http.post(url, temp).subscribe(data => {
 
-    // }
+        if (i == this.dollarDenominations.length - 1) {
+          alert('Quantity updated');
+          this.updateAmountInMachine = {};
+          this.ngOnInit();
+        }
+      });
 
-    // this.http.get('api/amountInMachine').subscribe((data) => {
-    //   console.log(data)
-
-    // });
-
-    this.http.post('api/amountInMachine', this.amountInMachine).subscribe((data) => {
-      console.log(data)
-    });
-
-
+    }
   }
 }
