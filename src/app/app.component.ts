@@ -45,9 +45,11 @@ export class AppComponent {
 
     this.http.get<ShopItemsInitialData[]>('api/shopItems').subscribe((data: ShopItemsInitialData[]) => {
       this.shopItems = data;
+      console.log(this.shopItems);
     });
 
     this.http.get<{ [key: number]: number }>('api/amountInMachine').subscribe((data: { [key: number]: number }) => {
+      console.log(data)
       this.amountInMachine = data;
       this.totalAmountInMachine = this.amountInMachine[1] * 1 + this.amountInMachine[2] * 2 + this.amountInMachine[5] * 5 +
         this.amountInMachine[10] * 10 + this.amountInMachine[20] * 20 + this.amountInMachine[50] * 50 + this.amountInMachine[100] * 100;
@@ -184,20 +186,31 @@ export class AppComponent {
   // function to update cash for amountInMachine
   updateCash() {
     // update updateAmountInserted to amountInserted array
-    for (let i = 0; i < this.dollarDenominations.length; i++) {
-      this.amountInMachine[this.dollarDenominations[i]] = this.updateAmountInMachine[this.dollarDenominations[i]] +
-       this.amountInMachine[this.dollarDenominations[i]];
-       
-      console.log(this.amountInMachine[this.dollarDenominations[i]]);
+    // for (let i = 0; i < this.dollarDenominations.length; i++) {
+    //   this.amountInMachine[this.dollarDenominations[i]] = this.updateAmountInMachine[this.dollarDenominations[i]] +
+    //     this.amountInMachine[this.dollarDenominations[i]];
 
-       let url = 'api/amountInMachine/' + this.dollarDenominations[i];
+    //   console.log(this.amountInMachine[this.dollarDenominations[i]]);
 
-       this.http.post(url, this.amountInMachine[i]).subscribe(data => {
+    //   let url = 'api/amountInMachine/' + this.dollarDenominations[i];
 
-        alert('Quantity updated');
-        this.ngOnInit();
-      });
+    //    this.http.post<{ [key: number]: number }>(url, this.amountInMachine[i]).subscribe(data => {
 
-    }
+    //     alert('Quantity updated');
+    //     this.ngOnInit();
+    //   });
+
+    // }
+
+    // this.http.get('api/amountInMachine').subscribe((data) => {
+    //   console.log(data)
+
+    // });
+
+    this.http.post('api/amountInMachine', this.amountInMachine).subscribe((data) => {
+      console.log(data)
+    });
+
+
   }
 }
